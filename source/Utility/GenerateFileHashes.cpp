@@ -10,7 +10,8 @@ namespace fs = std::filesystem;
 const std::vector<std::string> extensionsToLookFor = {
     ".rttex",
     ".ogg",
-    ".mp3"
+    ".mp3",
+    ".wav"
 };
 
 void GenerateFileHashes(const std::string& basePath)

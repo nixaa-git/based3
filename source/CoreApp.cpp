@@ -4,6 +4,7 @@ void CoreApp::Init()
 {
     // todo.
     m_pENetServer = new ENetServer();
+    m_pSQLManager = new MySQLManager();
     m_pEventManager = new EventManager();
     m_pItemInfoManager = new ItemInfoManager();
 }
@@ -15,6 +16,8 @@ void CoreApp::Main()
         return;
     }
 
+    m_pSQLManager->DoesTableExist("players");
+
     m_pEventManager->Init();
     this->InitItemData();
 
@@ -25,7 +28,6 @@ void CoreApp::Main()
 void CoreApp::InitItemData()
 {
     TextScanner scan(std::string("item_definitions.txt"));
-    //scan.SetupFromMemoryAddress(scan.GetAllRaw().c_str());
 
     ::printf("Items.dat is %d bytes (as text), converted to %d lines.\n", scan.GetAllRaw().size(), scan.m_lines.size());
 
@@ -41,9 +43,9 @@ void CoreApp::InitItemData()
     m_pItemInfoManager->SetupFileHashes(true, false);
 
     int offset = 0;
-    m_pItemInfoBuffer = m_pItemInfoManager->SaveToMem(offset, RT_ITEM_INFO_VERSION, true);
+    m_pItemInfoBuffer = m_pItemInfoManager->SaveToMem(offset, RT_ITEM_INFO_VERSION, false);
 
-    m_itemInfoBufferSize = 6 + sizeof(ItemInfo) * m_pItemInfoManager->m_itemInfo.size();
+    m_itemInfoBufferSize = sizeof(ItemInfo) * m_pItemInfoManager->m_itemInfo.size();
 }
 
 ENetServer* CoreApp::GetENetServer()
