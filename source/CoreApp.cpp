@@ -21,6 +21,9 @@ void CoreApp::Main()
     m_pEventManager->Init();
     this->InitItemData();
 
+    //auto item = m_pItemInfoManager->GetItemByIDSafe(50);
+    //::printf("Item ID: %d, Name: %s, Rarity: %d\n", item->m_itemID, item->m_name.c_str(), item->m_rarity);
+
     // begin service loop
     m_pENetServer->Start();
 }
@@ -43,9 +46,13 @@ void CoreApp::InitItemData()
     m_pItemInfoManager->SetupFileHashes(true, false);
 
     int offset = 0;
-    m_pItemInfoBuffer = m_pItemInfoManager->SaveToMem(offset, RT_ITEM_INFO_VERSION, false);
+    m_pItemInfoBuffer = m_pItemInfoManager->SaveToMem(offset, RT_ITEM_INFO_VERSION, true);
 
-    m_itemInfoBufferSize = sizeof(ItemInfo) * m_pItemInfoManager->m_itemInfo.size();
+    m_itemInfoBufferSize = offset;
+
+    m_itemInfoHash = HashString((const char*)m_pItemInfoBuffer, m_itemInfoBufferSize);
+
+    ::printf("m_itemInfoBufferSize offset is %d\n", m_itemInfoBufferSize);
 }
 
 ENetServer* CoreApp::GetENetServer()
@@ -71,4 +78,9 @@ uint8_t* CoreApp::GetItemInfoBuffer()
 uint32_t CoreApp::GetItemInfoBufferSize()
 {
     return m_itemInfoBufferSize;
+}
+
+uint32_t CoreApp::GetItemInfoHash()
+{
+    return m_itemInfoHash;
 }

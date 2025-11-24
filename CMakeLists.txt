@@ -2,8 +2,6 @@ cmake_minimum_required(VERSION 3.15)
 
 project(based)
 
-#add_subdirectory(dependencies/mysql-connector-cpp)
-
 file(GLOB src
     dependencies/enet/*.c
     dependencies/proton/*.cpp
@@ -25,6 +23,20 @@ add_executable(${PROJECT_NAME}
     ${src}
 )
 
+if (WIN32)
+
+    set(MYSQL_DIR "C:/Program Files/MySQL/MySQL Server 9.4")
+
+    target_include_directories(${PROJECT_NAME} PRIVATE
+        ${MYSQL_DIR}/include
+    )
+
+    target_link_directories(${PROJECT_NAME} PRIVATE
+        ${MYSQL_DIR}/lib
+    )
+
+endif()
+
 set_target_properties(${PROJECT_NAME} PROPERTIES
     CXX_STANDARD 20
     C_STANDARD 11
@@ -37,5 +49,5 @@ target_link_libraries(${PROJECT_NAME}
     Ws2_32
     winmm
     kernel32
-    #mysql::concpp
+    libmysql.lib
 )

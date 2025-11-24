@@ -49,7 +49,7 @@ void MemorySerializeStringEncrypted( std::string &num, uint8_t *pMem, int &offse
 template <typename T>
 inline void MemorySerialize(T& out, uint8_t* in, int& offsetInOut, bool bWriteToMem)
 {
-    uint8_t* addr = in + offsetInOut;      // pointer, not uintptr_t integer
+    uint8_t* addr = in + offsetInOut;
 
     if (bWriteToMem)
     {
@@ -62,6 +62,8 @@ inline void MemorySerialize(T& out, uint8_t* in, int& offsetInOut, bool bWriteTo
 
     offsetInOut += static_cast<int>(sizeof(T));
 }
+
+void MemorySerialize( std::string &num, uint8 *pMem, int &offsetInOut, bool bWriteToMem);
 
 inline uint32_t ReliableHash(const void* data, size_t dataLen)
 {

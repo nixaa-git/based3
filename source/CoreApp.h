@@ -26,6 +26,7 @@ public:
     ItemInfoManager* GetItemInfoManager();
     uint8_t* GetItemInfoBuffer();
     uint32_t GetItemInfoBufferSize();
+    uint32_t GetItemInfoHash();
 
 private:
     ENetServer* m_pENetServer = NULL;
@@ -33,7 +34,8 @@ private:
     EventManager* m_pEventManager = NULL;
     ItemInfoManager* m_pItemInfoManager = NULL;
     uint8_t* m_pItemInfoBuffer = NULL;
-    uint32_t m_itemInfoBufferSize = NULL;
+    int32_t m_itemInfoBufferSize = NULL;
+    uint32_t m_itemInfoHash = NULL;
 };
 
 extern CoreApp* g_pApp;

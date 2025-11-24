@@ -11,7 +11,12 @@ namespace event
             return;
         }
 
+        // todo check is client authed, if not then dc them right here.
+
         ::printf("Client requested item data!\n");
+
+        VariantList msg{ "OnConsoleMessage", "`oOne moment, updating items...``" };
+        ctx.m_pClient->SendGlobalFunctionCall(msg, 0, -1);
 
         GameUpdatePacket pkt;
         pkt.type = PACKET_SEND_ITEM_DATABASE_DATA;

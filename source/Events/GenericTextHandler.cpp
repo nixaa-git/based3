@@ -7,8 +7,10 @@ void GenericTextHandler::Init()
 
     //::printf("ptr for requestedName event func is %llX\n", event::requestedName);
     this->RegisterEvent("requestedName", event::requestedName);
+
+    // item data refresh disabled for now bcs of crash issues ! 
     this->RegisterEvent("refresh_item_data", event::refresh_item_data);
-    this->RegisterEvent("enter_game", nullptr);
+    //this->RegisterEvent("enter_game", nullptr);
 
     ::printf("%zu generic text handler%s registered\n", m_handlers.size(), m_handlers.size() >= 2 ? "s": "");
 }

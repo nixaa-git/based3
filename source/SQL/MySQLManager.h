@@ -1,20 +1,26 @@
 #pragma once
 
 #include <iostream>
-
-//#include <mysql/jdbc.h>
+#include <cassert>
+#include <mysql.h>
 
 class MySQLManager
 {
 public:
-    MySQLManager() {}
+    MySQLManager();
+    ~MySQLManager();
 
-    void Init(const char* host, const char* name, const char* password, const char* dbName);
+    void Kill();
+    bool Init(const char* host, const char* name, const char* password, const char* dbName);
 
+    bool Query(std::string query, bool bShowError);
     bool DoesTableExist(std::string table);
 
+    MYSQL* GetConnection();
+
 private:
-/*
-    sql::Driver* m_pDriver = NULL;
-    std::auto_ptr<sql::Connection> m_pCon = NULL*/
+    MYSQL* m_pMYSQL = NULL;
+    int m_opsDone = 0;
 };
+
+extern MySQLManager* GetSQLManager();
