@@ -156,6 +156,34 @@ bool AccountManager::IsPasswordCorrect(int userID, const std::string& password)
     return false;
 }
 
+void AccountManager::LoadDataFromSQL(GameClient* pClient, int userID)
+{
+    if (!pClient)
+    {
+        ::printf("AccountManager::LoadDataFromSQL() : pClient was nullptr!\n");
+        return;
+    }
+
+    std::string query = "SELECT * FROM players WHERE ID = " + m_pSQLManager->EscapeString(toString(userID));
+
+    if (m_pSQLManager->Query(query, true))
+    {
+        MYSQL_RES* result;
+        MYSQL_ROW row;
+
+        result = mysql_store_result(m_pSQLManager);
+
+        constexpr int expectedRows = 33;
+        int numRows = mysql_num_rows(result);
+        if (numRows >= expectedRows)
+        {
+            
+        }
+
+        mysql_free_result(result);
+    }
+}
+
 bool AccountManager::CreateTablesIfNeeded()
 {
     if (m_pSQLManager->DoesTableExist("players", true))

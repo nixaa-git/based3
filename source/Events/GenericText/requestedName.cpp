@@ -39,11 +39,14 @@ namespace event
         {
             ::printf("Client auth wasn't valid, sending logon fail and disconnecting them...\n");
             ctx.m_pClient->SendPacket(2, "action|logon_fail");
+            ctx.m_pClient->SetAuthStatus(eClientAuthStatus::NOT_AUTHENTICATED);
             enet_peer_disconnect_now(ctx.m_pClient->GetENetPeer(), 0);
+            return;
         }
         else
         {
             ::printf("Client valid auth!\n");
+            ctx.m_pClient->SetAuthStatus(eClientAuthStatus::AUTHENTICATED);
             // todo: Load data from SQL to GameClients fields
         }
 

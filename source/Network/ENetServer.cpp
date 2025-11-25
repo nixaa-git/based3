@@ -38,8 +38,8 @@ void ENetServer::HostService()
                 {
                     ::printf("ENetServer got connection!\n");
                     GameClient* pClient = new GameClient(event.peer);
+                    event.peer->data = (GameClient*)pClient;
                     pClient->SendHelloPacket();
-                    pClient->SendPacket(3, "action|log\nmsg|Take this hello packet!");
                 } break;
                 case ENET_EVENT_TYPE_DISCONNECT:
                 {
@@ -48,7 +48,8 @@ void ENetServer::HostService()
                 case ENET_EVENT_TYPE_RECEIVE:
                 {
                     ::printf("ENetServer received a packet!\n");
-                    GameClient* pClient = new GameClient(event.peer);
+                    GameClient* pClient = ((GameClient*)event.peer->data);
+                    if (!pClient) continue;
 
                     const char* textPtr = GetTextPointerFromPacket(event.packet);
 

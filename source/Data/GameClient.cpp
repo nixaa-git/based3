@@ -15,9 +15,9 @@ uint64_t GameClient::GetUserID() const
     return m_userID;
 }
 
-bool GameClient::GetAuthStatus() const
+eClientAuthStatus GameClient::GetAuthStatus() const
 {
-    return m_bDidAuth;
+    return m_authStatus;
 }
 
 void GameClient::SetName(const std::string& newName)
@@ -30,9 +30,9 @@ void GameClient::SetUserID(uint64_t userID)
     m_userID = userID;
 }
 
-void GameClient::SetAuthStatus(bool status)
+void GameClient::SetAuthStatus(eClientAuthStatus status)
 {
-    m_bDidAuth = status;
+    m_authStatus = status;
 }
 
 void GameClient::SendHelloPacket()

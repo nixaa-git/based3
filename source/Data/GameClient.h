@@ -3,6 +3,13 @@
 #include <iostream>
 #include "PacketSender.h"
 
+enum class eClientAuthStatus
+{
+    NOT_AUTHENTICATED = 0,
+    AUTHENTICATED,
+    SIZE
+};
+
 class GameClient : public PacketSender
 {
 public:
@@ -13,19 +20,19 @@ public:
     ENetPeer* GetENetPeer() const;
     std::string GetName() const;
     uint64_t GetUserID() const;
-    bool GetAuthStatus() const;
+    eClientAuthStatus GetAuthStatus() const;
 
     // setters
     void SetName(const std::string& newName);
     void SetUserID(uint64_t userID);
-    void SetAuthStatus(bool status);
+    void SetAuthStatus(eClientAuthStatus status);
 
     // methods
     void SendHelloPacket();
 
 private:
     ENetPeer* m_pPeer = NULL;
-    bool m_bDidAuth = false;
+    eClientAuthStatus m_authStatus = eClientAuthStatus::NOT_AUTHENTICATED;
 
     std::string m_name{};
     uint64_t m_userID = 0;
