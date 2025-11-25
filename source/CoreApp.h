@@ -5,6 +5,7 @@
 #include "Events/EventManager.h"
 #include "Manager/ItemInfoManager.h"
 #include "SQL/MySQLManager.h"
+#include "SQL/AccountManager.h"
 
 class CoreApp
 {
@@ -22,6 +23,7 @@ public:
     // getters
     ENetServer* GetENetServer();
     MySQLManager* GetSQLManager();
+    AccountManager* GetAccountManager();
     EventManager* GetEventManager();
     ItemInfoManager* GetItemInfoManager();
     uint8_t* GetItemInfoBuffer();
@@ -31,6 +33,7 @@ public:
 private:
     ENetServer* m_pENetServer = NULL;
     MySQLManager* m_pSQLManager = NULL;
+    AccountManager* m_pAccountManager = NULL;
     EventManager* m_pEventManager = NULL;
     ItemInfoManager* m_pItemInfoManager = NULL;
     uint8_t* m_pItemInfoBuffer = NULL;

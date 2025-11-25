@@ -4,9 +4,11 @@ void CoreApp::Init()
 {
     // todo.
     m_pENetServer = new ENetServer();
-    m_pSQLManager = new MySQLManager();
     m_pEventManager = new EventManager();
     m_pItemInfoManager = new ItemInfoManager();
+    m_pAccountManager = new AccountManager();
+
+    m_pSQLManager = GetSQLManager();
 }
 
 void CoreApp::Main()
@@ -16,7 +18,10 @@ void CoreApp::Main()
         return;
     }
 
-    m_pSQLManager->DoesTableExist("players");
+    //m_pSQLManager->DoesTableExist("players");
+
+    m_pAccountManager->Init();
+    m_pAccountManager->CreateGrowID(1, "Zenixa", "perkele", "zenixa351@gmail.com");
 
     m_pEventManager->Init();
     this->InitItemData();
@@ -63,6 +68,11 @@ ENetServer* CoreApp::GetENetServer()
 EventManager* CoreApp::GetEventManager()
 {
     return m_pEventManager;
+}
+
+MySQLManager* CoreApp::GetSQLManager()
+{
+    return m_pSQLManager;
 }
 
 ItemInfoManager* CoreApp::GetItemInfoManager()

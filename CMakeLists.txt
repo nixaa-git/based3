@@ -23,9 +23,15 @@ add_executable(${PROJECT_NAME}
     ${src}
 )
 
+set_target_properties(${PROJECT_NAME} PROPERTIES
+    CXX_STANDARD 20
+    C_STANDARD 11
+)
+
 if (WIN32)
 
-    set(MYSQL_DIR "C:/Program Files/MySQL/MySQL Server 9.4")
+    # Install MySQL Server 8.1 from https://downloads.mysql.com/archives/community/
+    set(MYSQL_DIR "C:/Program Files/MySQL/MySQL Server 8.1")
 
     target_include_directories(${PROJECT_NAME} PRIVATE
         ${MYSQL_DIR}/include
@@ -35,14 +41,19 @@ if (WIN32)
         ${MYSQL_DIR}/lib
     )
 
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "C:/Program Files/MySQL/MySQL Server 8.1/lib/libmysql.dll"
+        $<TARGET_FILE_DIR:based>
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "C:/Program Files/MySQL/MySQL Server 8.1/bin/libssl-3-x64.dll"
+        $<TARGET_FILE_DIR:based>
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "C:/Program Files/MySQL/MySQL Server 8.1/bin/libcrypto-3-x64.dll"
+        $<TARGET_FILE_DIR:based>
+    )
+
 endif()
-
-set_target_properties(${PROJECT_NAME} PROPERTIES
-    CXX_STANDARD 20
-    C_STANDARD 11
-)
-
-#find_package(mysql-concpp REQUIRED)
 
 # for windows builds !!
 target_link_libraries(${PROJECT_NAME}

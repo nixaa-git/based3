@@ -1,8 +1,9 @@
 #include "MySQLManager.h"
+#include <proton/MiscUtils.h>
 
-MySQLManager* g_pMySQLManager() = new MySQLManager();
+MySQLManager* g_pMySQLManager = new MySQLManager();
 
-MySQLManager* GetMySQLManager()
+MySQLManager* GetSQLManager()
 {
     return g_pMySQLManager;
 }
@@ -32,7 +33,7 @@ bool MySQLManager::Init(const char* host, const char* name, const char* password
 
     m_pMYSQL = mysql_init(NULL);
 
-    if (!mysql_real_connect(m_pMYSQL, host, name, password, dbName, NULL, NULL, NULL))
+    if (!mysql_real_connect(m_pMYSQL, host, name, password, dbName, 3306, NULL, NULL))
     {
         ::printf("MySQLManager::Init() Fatal error, failed to connect to %s\n", host);
         Kill();
@@ -40,6 +41,21 @@ bool MySQLManager::Init(const char* host, const char* name, const char* password
     }
 
     return true;
+}
+
+int MySQLManager::ShowError(std::string optionalLabel)
+{
+	if (!m_pMYSQL) return 0;
+
+	int error = mysql_errno(m_pMYSQL);
+
+	if (optionalLabel.length() > 128)
+	{
+	   //TruncateString(optionalLabel, 128);
+	}
+
+	::printf("MySQLManager error: %s %s (%s)\n", toString(error).c_str(), mysql_error(m_pMYSQL), optionalLabel.c_str());
+	return error;
 }
 
 bool MySQLManager::Query(std::string query, bool bShowError)
@@ -58,8 +74,7 @@ bool MySQLManager::Query(std::string query, bool bShowError)
     {
         if (bShowError)
         {
-            //
-            ::printf("Got some error sql query manager !\n");
+            ShowError("");
             return false;
         }
 
@@ -69,7 +84,7 @@ bool MySQLManager::Query(std::string query, bool bShowError)
     return true;
 }
 
-bool MySQLManager::DoesTableExist(std::string table)
+bool MySQLManager::DoesTableExist(std::string table, bool bShowErrors)
 {
     if (!m_pMYSQL)
     {
@@ -78,21 +93,40 @@ bool MySQLManager::DoesTableExist(std::string table)
     }
 
     assert(m_pMYSQL);
+    MYSQL_RES* result = NULL;
 
-    std::string query = "SHOW TABLES LIKE '" + table + "'";
+    bool bSuccess = Query("SHOW TABLES LIKE '"+table+"'", bShowErrors);
 
-    MYSQL_RES* res = NULL;
+	if (!bSuccess) return false;
 
-    if (mysql_query(m_pMYSQL, query.c_str()))
+	result = mysql_store_result(m_pMYSQL);
+	
+	int fields = mysql_num_fields(result);
+	int rows = (int)mysql_num_rows(result);
+	mysql_free_result(result);
+	
+	return rows > 0;
+}
+
+std::string MySQLManager::EscapeString(const std::string& input)
+{
+	char *pBuffer = new char[input.length()*2+1];
+
+	mysql_real_escape_string(m_pMYSQL, pBuffer, input.c_str(), (unsigned long)input.size());
+
+	std::string ret = pBuffer;
+	if (pBuffer)
     {
-        res = mysql_store_result(m_pMYSQL);
+        ::free(pBuffer);
+        pBuffer = NULL;
     }
 
-    int fields = mysql_num_fields(res);
-    int rows = (int)mysql_num_rows(res);
-    mysql_free_result(res);
+	return ret;
+}
 
-    return rows > 0;
+int MySQLManager::GetLastAutoIncrementInsertID()
+{
+	return (int)mysql_insert_id(m_pMYSQL);
 }
 
 MYSQL* MySQLManager::GetConnection()

@@ -5,9 +5,19 @@ std::string GameClient::GetName() const
     return m_name;
 }
 
+uint64_t GameClient::GetUserID() const
+{
+    return m_userID;
+}
+
 void GameClient::SetName(const std::string& newName)
 {
     m_name = newName;
+}
+
+void GameClient::SetUserID(uint64_t userID)
+{
+    m_userID = userID;
 }
 
 void GameClient::SendHelloPacket()
