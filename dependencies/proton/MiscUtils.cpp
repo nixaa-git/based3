@@ -373,3 +373,60 @@ void MemorySerialize( std::string &num, uint8 *pMem, int &offsetInOut, bool bWri
     }
     offsetInOut += len;
 }
+
+static constexpr std::size_t utf8_sequence_length(unsigned char lead) noexcept
+{
+    // Determine length from the leading byte.
+    if (lead < 0x80)                return 1; // ASCII
+    if ((lead & 0xE0) == 0xC0)      return 2; // 110xxxxx
+    if ((lead & 0xF0) == 0xE0)      return 3; // 1110xxxx
+    if ((lead & 0xF8) == 0xF0)      return 4; // 11110xxx
+    return 1; // invalid lead -> treat as single byte to avoid splitting buffer
+}
+
+static bool valid_utf8_continuation(unsigned char b) noexcept
+{
+    // Continuation bytes must have binary form 10xxxxxx (0x80..0xBF).
+    return (b & 0xC0) == 0x80;
+}
+
+void TruncateString(std::string &input, std::size_t len)
+{
+    if (len == 0) { input.clear(); return; }
+    std::size_t byteIndex = 0;
+    std::size_t charCount = 0;
+    const std::size_t n = input.size();
+
+    while (byteIndex < n && charCount < len) {
+        unsigned char lead = static_cast<unsigned char>(input[byteIndex]);
+        std::size_t seqLen = utf8_sequence_length(lead);
+
+        // If sequence would run past the end of the string, stop (avoid splitting).
+        if (byteIndex + seqLen > n) {
+            // treat remainder as invalid/truncated; stop before it
+            break;
+        }
+
+        // Validate continuation bytes; if invalid, treat the lead as a single byte
+        bool ok = true;
+        for (std::size_t k = 1; k < seqLen; ++k) {
+            if (!valid_utf8_continuation(static_cast<unsigned char>(input[byteIndex + k]))) {
+                ok = false;
+                break;
+            }
+        }
+        if (!ok) {
+            // treat this byte as a single (invalid) code point
+            seqLen = 1;
+        }
+
+        byteIndex += seqLen;
+        ++charCount;
+    }
+
+    // If we consumed fewer or equal bytes than original, truncate to byteIndex.
+    // If charCount < len and byteIndex == n, the string is shorter than requested -> leave it.
+    if (byteIndex < n) {
+        input.erase(byteIndex); // keep [0, byteIndex)
+    }
+}

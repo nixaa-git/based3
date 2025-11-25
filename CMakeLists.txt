@@ -41,6 +41,10 @@ if (WIN32)
         ${MYSQL_DIR}/lib
     )
 
+    target_compile_definitions(${PROJECT_NAME} PUBLIC
+        WIN32_LEAN_AND_MEAN
+    )
+
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "C:/Program Files/MySQL/MySQL Server 8.1/lib/libmysql.dll"

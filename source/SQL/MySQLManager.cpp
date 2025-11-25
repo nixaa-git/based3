@@ -51,7 +51,7 @@ int MySQLManager::ShowError(std::string optionalLabel)
 
 	if (optionalLabel.length() > 128)
 	{
-	   //TruncateString(optionalLabel, 128);
+	   TruncateString(optionalLabel, 128);
 	}
 
 	::printf("MySQLManager error: %s %s (%s)\n", toString(error).c_str(), mysql_error(m_pMYSQL), optionalLabel.c_str());

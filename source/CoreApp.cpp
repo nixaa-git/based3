@@ -21,7 +21,8 @@ void CoreApp::Main()
     //m_pSQLManager->DoesTableExist("players");
 
     m_pAccountManager->Init();
-    m_pAccountManager->CreateGrowID(1, "Zenixa", "perkele", "zenixa351@gmail.com");
+    //m_pAccountManager->CreateGrowID(1, "Zenixa", "perkele", "zenixa351@gmail.com");
+    //::printf("IsPasswordCorrect() test result got %d\n", m_pAccountManager->IsPasswordCorrect(1, "perkele"));
 
     m_pEventManager->Init();
     this->InitItemData();
@@ -73,6 +74,11 @@ EventManager* CoreApp::GetEventManager()
 MySQLManager* CoreApp::GetSQLManager()
 {
     return m_pSQLManager;
+}
+
+AccountManager* CoreApp::GetAccountManager()
+{
+    return m_pAccountManager;
 }
 
 ItemInfoManager* CoreApp::GetItemInfoManager()

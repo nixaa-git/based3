@@ -1,5 +1,6 @@
 #include "AccountManager.h"
 #include "MySQLManager.h"
+#include "../Data/GameClient.h"
 #include <proton/MiscUtils.h>
 
 AccountManager::AccountManager()
@@ -42,17 +43,47 @@ bool AccountManager::Init()
     return false;
 }
 
-bool AccountManager::AddPlayer(/*GameClient* pClient*/ const std::string& name, const std::string& country)
+int64_t AccountManager::GetUserIDByLogonName(const std::string& logonName)
 {
-    std::string query = m_pSQLManager->EscapeString("INSERT INTO players SET DateCreated = SYSDATE(),"
+    std::string query = "SELECT ID FROM players WHERE LogonName = '" + m_pSQLManager->EscapeString(logonName)
+        + "'";
+        
+    if (m_pSQLManager->Query(query, false))
+    {
+        MYSQL_RES* result;
+        MYSQL_ROW row;
+
+        result = mysql_store_result(m_pSQLManager->GetConnection());
+
+        int numRows = mysql_num_rows(result);
+        int64_t userID = -1;
+
+        if (numRows > 0)
+        {
+            row = mysql_fetch_row(result);
+            userID = ::atoi(row[0]);
+
+            ::printf("GetUserIDByLogonName got userID %d for logon name %s\n", userID, logonName.c_str());
+        }
+
+        mysql_free_result(result);
+
+        return userID;
+    }
+
+    return -1;
+}
+
+bool AccountManager::AddPlayer(GameClient* pClient, const std::string& name, const std::string& country)
+{
+    std::string query = "INSERT INTO players SET DateCreated = SYSDATE(),"
         "DailyLogon = SYSDATE(),"
         "DateLastLogin = NOW(),"
-        "Name = '" + name 
-        + "', Country = '" + country
-        + "', Platform = 11"
-    );
+        "Name = '" + m_pSQLManager->EscapeString(name) 
+        + "', Country = '" + m_pSQLManager->EscapeString(country)
+        + "', Platform = 11";
 
-    //pClient->SetUserID(m_pSQLManager->GetLastAutoIncrementInsertID());
+    pClient->SetUserID(m_pSQLManager->GetLastAutoIncrementInsertID());
 
     if (m_pSQLManager->Query(query, false))
     {
@@ -64,9 +95,8 @@ bool AccountManager::AddPlayer(/*GameClient* pClient*/ const std::string& name, 
 
 bool AccountManager::SetPasswordByID(int userID, const std::string& newPassword)
 {
-    std::string query = m_pSQLManager->EscapeString("UPDATE players SET PasswordHash=UNHEX(MD5(CONCAT(LOWER('" + newPassword
-        + "'), ID+3, 'worg'))) WHERE id = " + toString(userID)
-    );
+    std::string query = "UPDATE players SET PasswordHash=UNHEX(MD5(CONCAT(LOWER('" + m_pSQLManager->EscapeString(newPassword)
+        + "'), ID+3, 'worg'))) WHERE id = " + m_pSQLManager->EscapeString(toString(userID));
 
     if (!m_pSQLManager->Query(query, true))
     {
@@ -79,10 +109,9 @@ bool AccountManager::SetPasswordByID(int userID, const std::string& newPassword)
 
 bool AccountManager::CreateGrowID(int userID, const std::string& growID, const std::string& password, const std::string& email)
 {
-    std::string query = m_pSQLManager->EscapeString("UPDATE players SET LogonName = " + growID 
-        + ", Email = " + email
-        + " WHERE ID = " + toString(userID)
-    );
+    std::string query = "UPDATE players SET LogonName = '" + m_pSQLManager->EscapeString(growID) 
+        + "', Email = '" + m_pSQLManager->EscapeString(email)
+        + "' WHERE ID = " + m_pSQLManager->EscapeString(toString(userID));
 
     if (m_pSQLManager->Query(query, true))
     {
@@ -99,10 +128,9 @@ bool AccountManager::CreateGrowID(int userID, const std::string& growID, const s
 
 bool AccountManager::IsPasswordCorrect(int userID, const std::string& password)
 {
-    std::string query = m_pSQLManager->EscapeString("SELECT ID FROM players WHERE ID = " + toString(userID)
-        + " AND PasswordHash = UNHEX(md5(CONCAT(LOWER('" 
-        + "'), ID+3, 'worg')))"
-    );
+    std::string query = "SELECT ID FROM players WHERE ID = " + m_pSQLManager->EscapeString(toString(userID))
+        + " AND PasswordHash = UNHEX(md5(CONCAT(LOWER('" + m_pSQLManager->EscapeString(password)
+        + "'), ID+3, 'worg')))";
 
     if (m_pSQLManager->Query(query, true))
     {
@@ -118,21 +146,14 @@ bool AccountManager::IsPasswordCorrect(int userID, const std::string& password)
         }
 
         int numFields = mysql_num_fields(result);
-
-        while (row = mysql_fetch_row(result))
-        {
-            if ((int)row[0] != userID)
-            {
-                return false;
-            }
-
-            ::printf("row [0] = %d\n", row[0]);
-        }
+        int numRows = mysql_num_rows(result);
 
         mysql_free_result(result);
+
+        return numRows > 0;
     }
 
-    return true;
+    return false;
 }
 
 bool AccountManager::CreateTablesIfNeeded()
@@ -147,7 +168,7 @@ bool AccountManager::CreateTablesIfNeeded()
     std::string query = "CREATE TABLE players ("
         "ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,"
         "DateCreated DATE NOT NULL,"
-        "Name CHAR(18) NOT NULL,"
+        "Name CHAR(8) NOT NULL,"
         "Score INT DEFAULT 0,"
         "IP CHAR(20) NOT NULL DEFAULT '0.0.0.0',"
         "Country CHAR(3) NOT NULL DEFAULT '00',"

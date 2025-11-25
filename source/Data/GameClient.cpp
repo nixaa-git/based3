@@ -1,5 +1,10 @@
 #include "GameClient.h"
 
+ENetPeer* GameClient::GetENetPeer() const
+{
+    return m_pPeer;
+}
+
 std::string GameClient::GetName() const
 {
     return m_name;
@@ -10,6 +15,11 @@ uint64_t GameClient::GetUserID() const
     return m_userID;
 }
 
+bool GameClient::GetAuthStatus() const
+{
+    return m_bDidAuth;
+}
+
 void GameClient::SetName(const std::string& newName)
 {
     m_name = newName;
@@ -18,6 +28,11 @@ void GameClient::SetName(const std::string& newName)
 void GameClient::SetUserID(uint64_t userID)
 {
     m_userID = userID;
+}
+
+void GameClient::SetAuthStatus(bool status)
+{
+    m_bDidAuth = status;
 }
 
 void GameClient::SendHelloPacket()

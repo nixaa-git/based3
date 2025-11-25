@@ -76,3 +76,5 @@ inline uint32_t ReliableHash(const void* data, size_t dataLen)
 
 	return hash;
 }
+
+void TruncateString(std::string &input, std::size_t len);
