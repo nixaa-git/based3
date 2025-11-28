@@ -18,7 +18,7 @@ namespace event
 
         VariantList varmsg{ 
             "OnConsoleMessage",
-            std::format("`oWelcome back, `w{}``. 0 players online.``", ctx.m_pClient->GetName())
+            std::format("`oWelcome back, `w{}``. No friends online.``", ctx.m_pClient->GetDisplayName())
         };
 
         ctx.m_pClient->SendGlobalFunctionCall(varmsg, 0, -1);

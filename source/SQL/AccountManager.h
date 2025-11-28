@@ -9,10 +9,10 @@ struct PlayerSQLField
 public:
     int64_t ID;
     int64_t DateCreated;
-    char Name[8];
+    char* Name;
     int Score;
-    char IP[20];
-    char Country[3];
+    char* IP;
+    char* Country;
     int Platform;
     int Hash;
     int Settings;
@@ -24,11 +24,11 @@ public:
     int Coins;
     int CoinsGiven;
     int SecondHash;
-    char LogonName[20];
+    char* LogonName;
     int ItemsA;
     int Warnings;
     int Mutes;
-    char Email[64];
+    char* Email;
     int WorldID;
     float PosX;
     float PosY;

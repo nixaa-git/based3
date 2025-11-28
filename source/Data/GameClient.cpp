@@ -1,4 +1,6 @@
 #include "GameClient.h"
+#include "../SQL/AccountManager.h"
+#include <format>
 
 ENetPeer* GameClient::GetENetPeer() const
 {
@@ -20,6 +22,29 @@ eClientAuthStatus GameClient::GetAuthStatus() const
     return m_authStatus;
 }
 
+PlayerSQLField GameClient::GetSQLDataCached() const
+{
+    return m_sqlData;
+}
+
+std::string GameClient::GetDisplayName(bool bRemovePrefixAndSuffix) const
+{
+    // todo: is current owner/admin of this world?
+    // is nicked?
+    //
+    
+    std::string namePrefix = "`w";
+    std::string nameSuffix = "``";
+
+    if (bRemovePrefix)
+    {
+        namePrefix = "";
+        nameSuffix = "";
+    }
+
+    return std::format("{}{}{}", namePrefix, m_name, nameSuffix);
+}
+
 void GameClient::SetName(const std::string& newName)
 {
     m_name = newName;
@@ -33,6 +58,17 @@ void GameClient::SetUserID(uint64_t userID)
 void GameClient::SetAuthStatus(eClientAuthStatus status)
 {
     m_authStatus = status;
+}
+
+void GameClient::SetSQLDataCached(PlayerSQLField psql)
+{
+    m_sqlData = psql;
+
+    // set member data here?
+
+
+    m_name = std::string(psql.LogonName).empty() ? psql.Name : psql.LogonName;
+
 }
 
 void GameClient::SendHelloPacket()

@@ -21,6 +21,8 @@ void CoreApp::Main()
     //m_pSQLManager->DoesTableExist("players");
 
     m_pAccountManager->Init();
+    GameClient* pClient = new GameClient(NULL);
+    m_pAccountManager->LoadDataFromSQL(pClient, 1);
     //m_pAccountManager->CreateGrowID(1, "Zenixa", "perkele", "zenixa351@gmail.com");
     //::printf("IsPasswordCorrect() test result got %d\n", m_pAccountManager->IsPasswordCorrect(1, "perkele"));
 

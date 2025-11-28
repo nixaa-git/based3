@@ -171,13 +171,52 @@ void AccountManager::LoadDataFromSQL(GameClient* pClient, int userID)
         MYSQL_RES* result;
         MYSQL_ROW row;
 
-        result = mysql_store_result(m_pSQLManager);
+        result = mysql_store_result(m_pSQLManager->GetConnection());
 
-        constexpr int expectedRows = 33;
+        constexpr int expectedFields = 33;
         int numRows = mysql_num_rows(result);
-        if (numRows >= expectedRows)
+        int numFields = mysql_num_fields(result);
+
+        row = mysql_fetch_row(result);
+
+        if (numFields >= expectedFields)
         {
-            
+            PlayerSQLField field;
+            field.ID = ::atoi(row[0]);
+            field.DateCreated = ::atoi(row[1]);
+            field.Name = row[2];
+            field.Score = ::atoi(row[3]);
+            field.IP = row[4];
+            field.Country = row[5];
+            field.Platform = ::atoi(row[6]);
+            field.Hash = ::atoi(row[7]);
+            field.Settings = ::atoi(row[8]);
+            field.IAP = ::atoi(row[9]);
+            field.MoneySpent = ::atoi(row[10]);
+            field.IAPToday = ::atoi(row[11]);
+            field.IAPTransactions = ::atoi(row[12]);
+            field.Tapjoy = ::atoi(row[13]);
+            field.Coins = ::atoi(row[14]);
+            field.CoinsGiven = ::atoi(row[15]);
+            field.SecondHash = ::atoi(row[16]);
+            field.LogonName = row[17];
+            field.ItemsA = ::atoi(row[18]);
+            field.Warnings = ::atoi(row[19]);
+            field.Mutes = ::atoi(row[20]);
+            field.Email = row[21];
+            field.WorldID = ::atoi(row[22]);
+            field.PosX = ::strtof(row[23], nullptr);
+            field.PosY = ::strtof(row[24], nullptr);
+            field.Inventory = row[25];
+            field.SkinColor = ::atoi(row[26]);
+            field.WorldCreatedToday = ::atoi(row[27]);
+            field.WorldCreated = ::atoi(row[28]);
+            field.TimesDied = ::atoi(row[29]);
+            field.TotalLogons = ::atoi(row[30]);
+            field.DoorsUsed = ::atoi(row[31]);
+            field.PasswordHash = row[32];
+
+            pClient->SetSQLDataCached(field); 
         }
 
         mysql_free_result(result);

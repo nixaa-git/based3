@@ -9,6 +9,15 @@ struct CL_Vec2f
     CL_Vec2f(float xx, float yy) : x(xx), y(yy) {}
 };
 
+struct CL_Vec2i
+{
+    int x;
+    int y;
+
+    CL_Vec2i() {}
+    CL_Vec2i(int xx, int yy) : x(xx), y(yy) {}
+};
+
 struct CL_Vec3f
 {
     float x;
