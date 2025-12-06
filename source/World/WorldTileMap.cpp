@@ -26,7 +26,24 @@ void WorldTileMap::Serialize(uint8_t* pData, int& offset, bool bWriteToMem)
     }
     else 
     {
-        Tile tile{};
-        tile.Serialize(pData, offset, bWriteToMem);
+        for (int i = 0; i < m_tileCount; i++)
+        {
+            Tile tile{};
+            tile.m_index = i;
+            tile.Serialize(pData, offset, bWriteToMem);
+        }
+    }
+}
+
+void WorldTileMap::Generate()
+{
+    for (int xx = 0; xx < m_size.x; xx++)
+    {
+        for (int yy = 0; yy < m_size.y; yy++)
+        {
+            int index = 
+
+            if 
+        }
     }
 }

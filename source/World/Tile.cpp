@@ -7,5 +7,8 @@ void Tile::Serialize(uint8_t* pData, int& offset, bool bWriteToMem)
     MemorySerialize(m_flags, pData, offset, bWriteToMem);
     MemorySerialize(m_parent, pData, offset, bWriteToMem);
 
-    if (m_flags & )
+    if (m_flags & (1 << 3))
+    {
+        // TileExtra init and serialize etc
+    }
 }

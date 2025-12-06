@@ -13,4 +13,7 @@ private:
     uint16_t m_flags;
     uint16_t m_parent;
     // TileExtra ptr
+
+    // extra members not needed in serialization
+    int m_index;
 };

@@ -10,6 +10,7 @@ public:
     WorldTileMap(CL_Vec2i size) : m_size(size);
 
     void Serialize(uint8_t* pData, int& offset, bool bWriteToMem);
+    void Generate();
 
 private:
     uint32_t m_tileCount;
