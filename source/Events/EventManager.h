@@ -3,6 +3,7 @@
 #include <iostream>
 #include <unordered_map>
 #include "GenericTextHandler.h"
+#include "GameMessageHandler.h"
 #include "EventContext.h"
 
 class EventManager
@@ -14,4 +15,5 @@ public:
     void HandlePacket(EventContext& ctx);
 
     GenericTextHandler m_gtxHandler{};
+    GameMessageHandler m_gmHandler{};
 };

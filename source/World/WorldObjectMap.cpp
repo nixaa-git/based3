@@ -20,3 +20,17 @@ void WorldObjectMap::Serialize(uint8_t* pData, int& offset, bool bWriteToMem)
         object.Serialize(pData, offset, bWriteToMem);
     }
 }
+
+uint32_t WorldObjectMap::GetEstimatedMem()
+{
+    uint32_t res = 0;
+    res += sizeof(uint32_t);
+    res += sizeof(uint32_t);
+
+    for (auto& obj : m_objects)
+    {
+        res += obj.GetEstimatedMem();
+    }
+
+    return res;
+}

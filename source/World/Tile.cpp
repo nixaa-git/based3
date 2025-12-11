@@ -12,3 +12,16 @@ void Tile::Serialize(uint8_t* pData, int& offset, bool bWriteToMem)
         // TileExtra init and serialize etc
     }
 }
+
+uint32_t Tile::GetEstimatedMem()
+{
+    uint32_t res = 0;
+    res += sizeof(short) * 4;
+
+    if (m_flags & (1 << 3))
+    {
+        //todo
+    }
+
+    return res;
+}

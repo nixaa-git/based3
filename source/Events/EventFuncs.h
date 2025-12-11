@@ -12,6 +12,7 @@ namespace event
     void enter_game(EVENT_HANDLER_ARGS);
     
     /****Game Message****/
+    void join_request(EVENT_HANDLER_ARGS);
     
     
     /****Game Update****/

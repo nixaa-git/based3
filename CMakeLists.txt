@@ -30,11 +30,13 @@ file(GLOB src
     source/*.cpp
     source/Utility/*.cpp
     source/Data/*.cpp
+    source/World/*.cpp
     source/Network/*.cpp
     source/SQL/*.cpp
     source/Manager/*.cpp
     source/Events/*.cpp
     source/Events/GenericText/*.cpp
+    source/Events/GameMessage/*.cpp
 )
 
 include_directories(

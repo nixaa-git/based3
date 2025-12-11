@@ -52,20 +52,12 @@ void ENetServer::HostService()
                     if (!pClient) continue;
 
                     const char* textPtr = GetTextPointerFromPacket(event.packet);
+                    int msgType = GetMessageTypeFromPacket(event.packet);
 
-                    EventContext ctx = EventContext(pClient, textPtr == nullptr ? "" : std::string(textPtr), textPtr == nullptr ? *GetStructPointerFromPacket(event.packet) : GameUpdatePacket());
+                    EventContext ctx = EventContext(pClient, msgType, textPtr == nullptr ? "" : std::string(textPtr), textPtr == nullptr ? *GetStructPointerFromPacket(event.packet) : GameUpdatePacket());
                     g_pApp->GetEventManager()->HandlePacket(ctx);
 
-                    //pClient->SendPacket(3, "action|log\nmsg|Received login packet");
-
-                    /*
-                    VariantList var;
-                    var.Get(0).Set("OnConsoleMessage");
-                    var.Get(1).Set("wadcdawd");
-                    pClient->SendGlobalFunctionCall(var, 0, -1);
-                    */
-
-                    if (int msgType = GetMessageTypeFromPacket(event.packet); msgType == 2 || msgType == 3)
+                    if (msgType == 2 || msgType == 3)
                     {
                         ::printf("\ngeneric packet data:\n%s\n\n", GetTextPointerFromPacket(event.packet));
                     }

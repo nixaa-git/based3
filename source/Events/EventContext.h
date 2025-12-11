@@ -9,11 +9,12 @@ struct EventContext
 {
 public:
     GameClient* m_pClient = nullptr;
+    int m_packetType = 0;
     std::string m_packetText = "";
     GameUpdatePacket m_gamePacket{};
 
-    EventContext(GameClient* pClient, std::string packetText, GameUpdatePacket pkt)
-    : m_pClient(pClient), m_packetText(packetText), m_gamePacket(pkt) {}
+    EventContext(GameClient* pClient, int packetType, std::string packetText, GameUpdatePacket pkt)
+    : m_pClient(pClient), m_packetType(packetType), m_packetText(packetText), m_gamePacket(pkt) {}
 };
 
 #define EVENT_HANDLER_ARGS EventContext& ctx

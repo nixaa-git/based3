@@ -6,12 +6,12 @@ class Tile
 {
 public:
     void Serialize(uint8_t* pData, int& offset, bool bWriteToMem);
+    uint32_t GetEstimatedMem();
 
-private:
-    uint16_t m_fg;
-    uint16_t m_bg;
-    uint16_t m_flags;
-    uint16_t m_parent;
+    short m_fg{};
+    short m_bg{};
+    short m_flags{};
+    short m_parent{};
     // TileExtra ptr
 
     // extra members not needed in serialization
