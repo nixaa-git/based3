@@ -2,6 +2,28 @@ cmake_minimum_required(VERSION 3.15)
 
 project(based)
 
+if(WIN32)
+    SET(ENET_PLATFORM win32.c)
+else()
+    SET(ENET_PLATFORM unix.c) 
+endif()
+
+file(GLOB deps
+
+    # enet
+    dependencies/enet/callbacks.c
+    dependencies/enet/compress.c
+    dependencies/enet/host.c
+    dependencies/enet/list.c
+    dependencies/enet/packet.c
+    dependencies/enet/peer.c
+    dependencies/enet/protocol.c
+    dependencies/enet/${ENET_PLATFORM}
+
+    # proton
+    dependencies/proton/*.cpp
+)
+
 file(GLOB src
     dependencies/enet/*.c
     dependencies/proton/*.cpp
@@ -57,12 +79,33 @@ if (WIN32)
         $<TARGET_FILE_DIR:based>
     )
 
-endif()
+    # for windows builds !!
+    target_link_libraries(${PROJECT_NAME}
+        Ws2_32
+        winmm
+        kernel32
+        libmysql.lib
+    )
 
-# for windows builds !!
-target_link_libraries(${PROJECT_NAME}
-    Ws2_32
-    winmm
-    kernel32
-    libmysql.lib
-)
+else()
+    find_path(MYSQL_INCLUDE_DIR
+        mysql/mysql.h
+	PATHS /usr/include /usr/local/include
+    )
+
+    find_library(MYSQL_LIBRARY
+        NAMES mysqlclient
+	PATHS /usr/lib /usr/lib/x86_64-linux-gnu /usr/local/lib
+    )
+
+    message(STATUS "MySQL include directory: ${MYSQL_INCLUDE_DIR}")
+    message(STATUS "MySQL lib path: ${MYSQL_LIBRARY}")
+
+    target_include_directories(${PROJECT_NAME} PRIVATE
+	    ${MYSQL_INCLUDE_DIR}
+    )
+
+    target_link_libraries(${PROJECT_NAME}
+	    ${MYSQL_LIBRARY}
+    )
+endif()

@@ -5,7 +5,7 @@
 
 extern "C" 
 {
-    #include <mysql.h>
+    #include <mysql/mysql.h>
 }
 
 class MySQLManager

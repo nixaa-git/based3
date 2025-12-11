@@ -53,7 +53,7 @@
 #include <poll.h>
 #endif
 
-#ifndef HAS_SOCKLEN_T
+#if defined(_WIN32) || defined(_WIN64)
 typedef int socklen_t;
 #endif
 

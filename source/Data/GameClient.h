@@ -2,8 +2,9 @@
 
 #include <iostream>
 #include "PacketSender.h"
+#include "../SQL/AccountManager.h"
 
-struct PlayerSQLField;
+//struct PlayerSQLField;
 
 enum class eClientAuthStatus
 {

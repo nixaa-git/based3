@@ -36,7 +36,7 @@ std::string GameClient::GetDisplayName(bool bRemovePrefixAndSuffix) const
     std::string namePrefix = "`w";
     std::string nameSuffix = "``";
 
-    if (bRemovePrefix)
+    if (bRemovePrefixAndSuffix)
     {
         namePrefix = "";
         nameSuffix = "";

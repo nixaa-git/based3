@@ -1,5 +1,6 @@
 #include "MiscUtils.h"
 #include <cassert>
+#include <climits>
 
 void MemorySerializeString( std::string &num, uint8_t *pMem, int &offsetInOut, bool bWriteToMem)
 {

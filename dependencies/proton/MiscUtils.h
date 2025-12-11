@@ -5,6 +5,11 @@
 #include <sstream>
 #include <string>
 
+#ifdef __unix__
+    #include <stdint.h>
+    #include <string.h>
+#endif
+
 typedef uint8_t uint8;
 typedef uint16_t uint16;
 typedef uint32_t uint32;
@@ -53,11 +58,11 @@ inline void MemorySerialize(T& out, uint8_t* in, int& offsetInOut, bool bWriteTo
 
     if (bWriteToMem)
     {
-        std::memcpy(addr, &out, sizeof(T));
+        memcpy(addr, &out, sizeof(T));
     }
     else
     {
-        std::memcpy(&out, addr, sizeof(T));
+        memcpy(&out, addr, sizeof(T));
     }
 
     offsetInOut += static_cast<int>(sizeof(T));

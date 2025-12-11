@@ -7,11 +7,17 @@
 
 #include <proton/TextScanner.h>
 
-#if defined(RT_SERVER) || defined(RT_LOGON)
-#include "PlayModDB.h"
-#else
-enum ePlayModType; // make a forward declaration for the client ig
+#ifdef __unix__
+    #include <stdint.h>
 #endif
+
+//enum ePlayModType; // make a forward declaration for the client ig
+
+enum ePlayModType
+{
+    NONE = 0,
+    TEST
+};
 
 #define RT_ITEM_INFO_VERSION 8
 

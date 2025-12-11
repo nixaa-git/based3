@@ -179,10 +179,15 @@ void AccountManager::LoadDataFromSQL(GameClient* pClient, int userID)
 
         row = mysql_fetch_row(result);
 
+        if (row == nullptr)
+        {
+            return;
+        }
+
         if (numFields >= expectedFields)
         {
             PlayerSQLField field;
-            field.ID = ::atoi(row[0]);
+             field.ID = ::atoi(row[0]);
             field.DateCreated = ::atoi(row[1]);
             field.Name = row[2];
             field.Score = ::atoi(row[3]);
