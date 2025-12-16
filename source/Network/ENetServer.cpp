@@ -44,17 +44,22 @@ void ENetServer::HostService()
                 case ENET_EVENT_TYPE_DISCONNECT:
                 {
                     ::printf("ENetServer got disconnection!\n");
+
+                    GameClient* pClient = ((GameClient*)event.peer->data);
+                    if (!pClient) continue;
+
+                    g_pApp->GetAccountManager()->SaveProfile(pClient);
                 } break;
                 case ENET_EVENT_TYPE_RECEIVE:
                 {
-                    ::printf("ENetServer received a packet!\n");
                     GameClient* pClient = ((GameClient*)event.peer->data);
                     if (!pClient) continue;
 
                     const char* textPtr = GetTextPointerFromPacket(event.packet);
                     int msgType = GetMessageTypeFromPacket(event.packet);
+                    GameUpdatePacket* gamePkt = GetStructPointerFromPacket(event.packet);
 
-                    EventContext ctx = EventContext(pClient, msgType, textPtr == nullptr ? "" : std::string(textPtr), textPtr == nullptr ? *GetStructPointerFromPacket(event.packet) : GameUpdatePacket());
+                    EventContext ctx = EventContext(pClient, msgType, msgType != 4 ? std::string(textPtr) : "", msgType == 4 ? gamePkt : nullptr);
                     g_pApp->GetEventManager()->HandlePacket(ctx);
 
                     if (msgType == 2 || msgType == 3)

@@ -35,7 +35,7 @@ namespace event
             bValidAuth = pAccMgr->IsPasswordCorrect(pAccMgr->GetUserIDByLogonName(growID), password);
         }
 
-        if (!bValidAuth)
+        if (!bValidAuth && ctx.m_pClient->GetAuthStatus() != eClientAuthStatus::AUTHENTICATED)
         {
             ::printf("Client auth wasn't valid, sending logon fail and disconnecting them...\n");
             ctx.m_pClient->SendPacket(2, "action|logon_fail");
@@ -43,10 +43,11 @@ namespace event
             enet_peer_disconnect_now(ctx.m_pClient->GetENetPeer(), 0);
             return;
         }
-        else
+        else if (bValidAuth && ctx.m_pClient->GetAuthStatus() != eClientAuthStatus::AUTHENTICATED)
         {
             ::printf("Client valid auth!\n");
             ctx.m_pClient->SetAuthStatus(eClientAuthStatus::AUTHENTICATED);
+            pAccMgr->LoadDataFromSQL(ctx.m_pClient, pAccMgr->GetUserIDByLogonName(scan.GetParmString("tankIDName", 1)));
             // todo: Load data from SQL to GameClients fields
         }
 

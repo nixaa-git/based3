@@ -5,6 +5,7 @@ void GameMessageHandler::Init()
 {
     // register actions
     this->RegisterEvent("join_request", event::join_request);
+    this->RegisterEvent("quit_to_exit", event::quit_to_exit);
 
     ::printf("%zu game message handler%s registered\n", m_handlers.size(), m_handlers.size() >= 2 ? "s": "");
 }
@@ -16,8 +17,6 @@ void GameMessageHandler::RegisterEvent(const std::string& action, EventHandler_t
         ::printf("Huh?! Somehow tried to register a GameMessageHandler with nullptr!\n");
         return;
     }
-
-    //::printf("Registering event %s\n", action.c_str());
 
     m_handlers[action] = std::move(handler);
 }

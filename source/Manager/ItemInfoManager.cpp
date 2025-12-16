@@ -1352,7 +1352,7 @@ bool ItemInfoManager::Load(TextScanner scanner)
 	HackInSpecialProperties();
 	
 	::printf("Checking for duplicate item recipes...\n");
-	::printf("Loaded %d tile definitions.  Taking up around %d bytes of memory.\n", m_itemInfo.size(), sizeof(ItemInfo) * m_itemInfo.size());
+	::printf("Loaded %zda tile definitions.  Taking up around %d bytes of memory.\n", m_itemInfo.size(), sizeof(ItemInfo) * m_itemInfo.size());
 
 	return true;
 }

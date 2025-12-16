@@ -17,6 +17,8 @@ const char* GetTextPointerFromPacket(ENetPacket* pNetPacket)
         return nullptr;
     }
 
+    pNetPacket->data[pNetPacket->dataLength - 1] = 0;
+
     return (const char*)&pNetPacket->data[4];
 }
 
@@ -27,5 +29,5 @@ GameUpdatePacket* GetStructPointerFromPacket(ENetPacket* pNetPacket)
         return nullptr;
     }
 
-    return (GameUpdatePacket*)&pNetPacket[0];
+    return (GameUpdatePacket*)(pNetPacket->data + 4);
 }

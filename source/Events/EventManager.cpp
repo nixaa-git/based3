@@ -8,6 +8,7 @@ void EventManager::Init()
 
     m_gtxHandler.Init();
     m_gmHandler.Init();
+    m_gpHandler.Init();
     // GameMessageHandler::Init();
     // GameUpdateHandler::Init();
 }
@@ -16,9 +17,7 @@ void EventManager::HandlePacket(EventContext& ctx)
 {
     bool bIsDealingWithMessagePacket = !ctx.m_packetText.empty();
 
-    ::printf("EventManager::HandlePacket() called! bIsDealingWithMessagePacket = %d\n", bIsDealingWithMessagePacket);
-
-    if (bIsDealingWithMessagePacket && ctx.m_gamePacket.type == 0)
+    if (bIsDealingWithMessagePacket && ctx.m_gamePacket == nullptr)
     {
         TextScanner scan;
         scan.SetupFromMemoryAddress(ctx.m_packetText.c_str());
@@ -40,40 +39,15 @@ void EventManager::HandlePacket(EventContext& ctx)
                 m_gmHandler.CallHandler(scan.GetParmString("action", 1), ctx);
             } break;
         }
-
-
-
-        /*
-        std::vector<std::string> buildo = StringTokenize(ctx.m_packetText, "|");
-        if (buildo.size() >= 2)
-        {
-            if (buildo[0] == "requestedName" || buildo[0] == "tankIDName")
-            {
-                m_gtxHandler.CallHandler("requestedName", ctx);
-                return;
-            }
-            else if (buildo[0] == "action")
-            {
-                buildo[1].pop_back();
-
-                switch (ctx.m_packetType)
-                {
-                    case 2:
-                    {
-                        m_gtxHandler.CallHandler(buildo[1], ctx);
-                    } break;
-                    case 3:
-                    {
-                        m_gmHandler.CallHandler(buildo[1], ctx);
-                    } break;
-                }
-            }
-        }*/
     }
     else
     {
-        GameUpdatePacket pkt = ctx.m_gamePacket;
+        if (ctx.m_gamePacket == nullptr)
+        {
+            ::printf("tried to call game packet handler but the game packet was nullptr??\n");
+            return;
+        }
 
-        // todo GameUpdateHandler.
+        m_gpHandler.CallHandler(ctx);
     }
 }

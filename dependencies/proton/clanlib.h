@@ -49,3 +49,14 @@ struct CL_Rectf
     CL_Rectf() {}
     CL_Rectf(float xx, float yy, float zz, float aa) : x(xx), y(yy), z(zz), a(aa) {}
 };
+
+struct CL_Rect
+{
+    int x;
+    int y;
+    int z;
+    int w;
+
+    CL_Rect() {}
+    CL_Rect(int xx, int yy, int zz, int ww) : x(xx), y(yy), z(zz), w(ww) {}
+};

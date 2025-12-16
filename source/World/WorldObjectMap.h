@@ -6,8 +6,8 @@
 class WorldObjectMap
 {
 public:
-    void Serialize(uint8_t* pData, int& offset, bool bWriteToMem);
-    uint32_t GetEstimatedMem();
+    void Serialize(uint8_t* pData, int& offset, bool bWriteToMem, bool bClientPacket = true);
+    uint32_t GetEstimatedMem(bool bClientPacket = true);
 
 private:
     uint32_t m_objectCount;

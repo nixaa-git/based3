@@ -13,8 +13,8 @@ namespace event
     
     /****Game Message****/
     void join_request(EVENT_HANDLER_ARGS);
-    
+    void quit_to_exit(EVENT_HANDLER_ARGS);
     
     /****Game Update****/
-
+    void gp_state(EVENT_HANDLER_ARGS);
 }

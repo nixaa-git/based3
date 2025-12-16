@@ -1,6 +1,6 @@
 #include "WorldObjectMap.h"
 
-void WorldObjectMap::Serialize(uint8_t* pData, int& offset, bool bWriteToMem)
+void WorldObjectMap::Serialize(uint8_t* pData, int& offset, bool bWriteToMem, bool bClientPacket)
 {
     m_objectCount = m_objects.size();
 
@@ -18,10 +18,11 @@ void WorldObjectMap::Serialize(uint8_t* pData, int& offset, bool bWriteToMem)
     {
         WorldObject object{};
         object.Serialize(pData, offset, bWriteToMem);
+        m_objects.push_back(object);
     }
 }
 
-uint32_t WorldObjectMap::GetEstimatedMem()
+uint32_t WorldObjectMap::GetEstimatedMem(bool bClientPacket)
 {
     uint32_t res = 0;
     res += sizeof(uint32_t);
@@ -29,7 +30,7 @@ uint32_t WorldObjectMap::GetEstimatedMem()
 
     for (auto& obj : m_objects)
     {
-        res += obj.GetEstimatedMem();
+        res += obj.GetEstimatedMem(bClientPacket);
     }
 
     return res;

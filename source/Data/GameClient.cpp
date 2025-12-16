@@ -1,4 +1,5 @@
 #include "GameClient.h"
+#include "../World/World.h"
 #include "../SQL/AccountManager.h"
 #include <format>
 
@@ -27,6 +28,11 @@ PlayerSQLField GameClient::GetSQLDataCached() const
     return m_sqlData;
 }
 
+PlayerInventory& GameClient::GetInventory()
+{
+    return m_inventory;
+}
+
 std::string GameClient::GetDisplayName(bool bRemovePrefixAndSuffix) const
 {
     // todo: is current owner/admin of this world?
@@ -43,6 +49,21 @@ std::string GameClient::GetDisplayName(bool bRemovePrefixAndSuffix) const
     }
 
     return std::format("{}{}{}", namePrefix, m_name, nameSuffix);
+}
+
+World* GameClient::GetCurrentWorld() const
+{
+    return m_pCurrentWorld;
+}
+
+int GameClient::GetNetID()
+{
+    return m_netID;
+}
+
+int64_t GameClient::GetSkinColour() const
+{
+    return m_skinColour;
 }
 
 void GameClient::SetName(const std::string& newName)
@@ -65,10 +86,23 @@ void GameClient::SetSQLDataCached(PlayerSQLField psql)
     m_sqlData = psql;
 
     // set member data here?
-
-
     m_name = std::string(psql.LogonName).empty() ? psql.Name : psql.LogonName;
+    
+}
 
+void GameClient::SetCurrentWorld(World* pWorld)
+{
+    m_pCurrentWorld = pWorld;
+}
+
+void GameClient::SetNetID(int netID)
+{
+    m_netID = netID;
+}
+
+void GameClient::SetSkinColour(int64_t skinCol)
+{
+    m_skinColour = skinCol;
 }
 
 void GameClient::SendHelloPacket()

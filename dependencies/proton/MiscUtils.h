@@ -26,6 +26,8 @@ std::vector<std::string> StringTokenize (const  std::string  & theString,  const
 void StringReplace(const std::string& what, const std::string& with, std::string& in);
 bool SeparateString (const char str[], int num, char delimiter, char *return1);
 std::string SeparateStringSTL(std::string input, int index, char delimiter);
+std::string ToLowercase(const std::string& input);
+std::string ToUppercase(const std::string& input);
 uint32 HashString(const char *str, int32 len);
 unsigned int GetHashOfFile(std::string fName);
 
@@ -45,6 +47,9 @@ int StringToInt( const std::string &s );
 unsigned int StringToUInt32(const std::string& s);
 uint32_t StringToColor(const std::string& rgba);
 std::string GetFileExtension(std::string fileName);
+uint8_t* LoadFileIntoMemoryBasic(const std::string& fileName, unsigned int* length, bool bUseSavePath = false, bool bAddBasePath = false);
+bool SaveFileFromMemoryBasic(std::string fileName, uint8 *pData, unsigned int length, bool bUseSavePath, bool bAddBasePath);
+int RandomRange(int min, int max);
 
 void MemorySerializeString( std::string &num, uint8_t *pMem, int &offsetInOut, bool bWriteToMem);
 bool MemorySerializeStringLarge(std::string& num, uint8_t* pMem, int& offsetInOut, bool bWriteToMem, uint32_t maxBytesInPacket);

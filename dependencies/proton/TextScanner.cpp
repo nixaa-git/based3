@@ -345,3 +345,14 @@ bool TextScanner::AppendFromMemoryAddressRaw( const char *pCharArray, int size )
 
 	return true;
 }
+
+void TextScanner::AddParmString(std::string key, std::string value, std::string token)
+{
+	std::string line;
+
+	line += key;
+	line += token;
+	line += value;
+
+	m_lines.push_back(line);
+}

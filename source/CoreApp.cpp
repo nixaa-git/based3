@@ -1,4 +1,6 @@
 #include "CoreApp.h"
+#include <filesystem>
+#include <system_error>
 
 void CoreApp::Init()
 {
@@ -6,9 +8,48 @@ void CoreApp::Init()
     m_pENetServer = new ENetServer();
     m_pEventManager = new EventManager();
     m_pItemInfoManager = new ItemInfoManager();
+    m_pWorldManager = new WorldManager();
     m_pAccountManager = new AccountManager();
+    m_pWorldDBManager = new WorldDBManager();
 
     m_pSQLManager = GetSQLManager();
+}
+
+bool DoesDirExist(const std::string& dir)
+{
+    namespace fs = std::filesystem;
+
+    if (fs::exists(dir) && fs::is_directory(dir))
+    {
+        return true;
+    }
+
+    return false;
+}
+
+void CoreApp::CreateDirsIfNeeded()
+{
+    namespace fs = std::filesystem;
+
+    static std::vector<std::string> dirsToCreate = {
+        "maps",
+    };
+
+    for (const auto& dir : dirsToCreate)
+    {
+        if (!DoesDirExist(dir))
+        {
+            std::error_code ec;
+            if (std::filesystem::create_directories(dir, ec))
+            {
+                ::printf("Created directory: %s\n", dir.c_str());
+            }
+            else
+            {
+                ::printf("Failed to create directory: %s, error: %s\n", dir.c_str(), ec.message().c_str());
+            }
+        }
+    }
 }
 
 void CoreApp::Main()
@@ -18,19 +59,13 @@ void CoreApp::Main()
         return;
     }
 
-    //m_pSQLManager->DoesTableExist("players");
+    this->CreateDirsIfNeeded();
 
     m_pAccountManager->Init();
-    GameClient* pClient = new GameClient(NULL);
-    m_pAccountManager->LoadDataFromSQL(pClient, 1);
-    //m_pAccountManager->CreateGrowID(1, "Zenixa", "perkele", "zenixa351@gmail.com");
-    //::printf("IsPasswordCorrect() test result got %d\n", m_pAccountManager->IsPasswordCorrect(1, "perkele"));
-
+    m_pWorldDBManager->Init(); 
     m_pEventManager->Init();
     this->InitItemData();
 
-    //auto item = m_pItemInfoManager->GetItemByIDSafe(50);
-    //::printf("Item ID: %d, Name: %s, Rarity: %d\n", item->m_itemID, item->m_name.c_str(), item->m_rarity);
 
     // begin service loop
     m_pENetServer->Start();
@@ -40,7 +75,7 @@ void CoreApp::InitItemData()
 {
     TextScanner scan(std::string("item_definitions.txt"));
 
-    ::printf("Items.dat is %d bytes (as text), converted to %d lines.\n", scan.GetAllRaw().size(), scan.m_lines.size());
+    ::printf("Items.dat is %zu bytes (as text), converted to %zu lines.\n", scan.GetAllRaw().size(), scan.m_lines.size());
 
     m_pItemInfoManager->Load(scan);
 
@@ -83,9 +118,19 @@ AccountManager* CoreApp::GetAccountManager()
     return m_pAccountManager;
 }
 
+WorldDBManager* CoreApp::GetWorldDBManager()
+{
+    return m_pWorldDBManager;
+}
+
 ItemInfoManager* CoreApp::GetItemInfoManager()
 {
     return m_pItemInfoManager;
+}
+
+WorldManager* CoreApp::GetWorldManager()
+{
+    return m_pWorldManager;
 }
 
 uint8_t* CoreApp::GetItemInfoBuffer()

@@ -57,6 +57,7 @@ public:
     bool CreateGrowID(int userID, const std::string& growID, const std::string& password, const std::string& email);
     bool IsPasswordCorrect(int userID, const std::string& password);
     void LoadDataFromSQL(GameClient* pClient, int userID);
+    void SaveProfile(GameClient* pClient);
 
     MYSQL* GetConnection();
 

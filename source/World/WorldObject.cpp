@@ -10,7 +10,7 @@ void WorldObject::Serialize(uint8_t* pData, int& offset, bool bWriteToMem)
     MemorySerialize(m_id, pData, offset, bWriteToMem);
 }
 
-uint32_t WorldObject::GetEstimatedMem()
+uint32_t WorldObject::GetEstimatedMem(bool bClientPacket)
 {
     uint32_t res = 0;
     res += sizeof(uint16_t);

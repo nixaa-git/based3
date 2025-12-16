@@ -7,7 +7,7 @@ class WorldObject
 {
 public:
     void Serialize(uint8_t* pData, int& offset, bool bWriteToMem);
-    uint32_t GetEstimatedMem();
+    uint32_t GetEstimatedMem(bool bClientPacket = true);
 
     uint16_t m_itemID = 0;
     CL_Vec2f m_pos{};

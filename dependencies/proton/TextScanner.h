@@ -79,6 +79,9 @@ public:
 	bool AppendFromMemoryAddress(const char *pCharArray);
 	bool AppendFromMemoryAddressRaw( const char *pCharArray, int size );
 	bool AppendFromString(const std::string lines);
+
+	void AddParmString(std::string key, std::string value, std::string token = "|");
+
 	std::vector<std::string> m_lines;
 
 private:

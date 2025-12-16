@@ -63,7 +63,7 @@ int64_t AccountManager::GetUserIDByLogonName(const std::string& logonName)
             row = mysql_fetch_row(result);
             userID = ::atoi(row[0]);
 
-            ::printf("GetUserIDByLogonName got userID %d for logon name %s\n", userID, logonName.c_str());
+            ::printf("GetUserIDByLogonName got userID %lld for logon name %s\n", userID, logonName.c_str());
         }
 
         mysql_free_result(result);
@@ -141,7 +141,7 @@ bool AccountManager::IsPasswordCorrect(int userID, const std::string& password)
 
         if (!result)
         {
-            ::printf("AccountManager::IsPasswordCorrect() got invalid mysql result\n");
+            //::printf("AccountManager::IsPasswordCorrect() got invalid mysql result\n");
             return false;
         }
 
@@ -184,10 +184,12 @@ void AccountManager::LoadDataFromSQL(GameClient* pClient, int userID)
             return;
         }
 
+        unsigned long* lengths = mysql_fetch_lengths(result);
+
         if (numFields >= expectedFields)
         {
             PlayerSQLField field;
-             field.ID = ::atoi(row[0]);
+            field.ID = ::atoi(row[0]);
             field.DateCreated = ::atoi(row[1]);
             field.Name = row[2];
             field.Score = ::atoi(row[3]);
@@ -212,6 +214,24 @@ void AccountManager::LoadDataFromSQL(GameClient* pClient, int userID)
             field.WorldID = ::atoi(row[22]);
             field.PosX = ::strtof(row[23], nullptr);
             field.PosY = ::strtof(row[24], nullptr);
+
+            /*
+            if (lengths)
+            {
+                uint8_t* pInvData = (uint8_t*)::malloc(lengths[25]);
+    
+                auto& inv = pClient->GetInventory();
+                int offset = 0;
+                inv.Serialize(pInvData, offset, false);
+                ::free(pInvData);
+
+                if (!inv.HasItem(18) || !inv.HasItem(32))
+                {
+                    inv.Reset();
+                }
+            }
+            */
+
             field.Inventory = row[25];
             field.SkinColor = ::atoi(row[26]);
             field.WorldCreatedToday = ::atoi(row[27]);
@@ -293,4 +313,40 @@ bool AccountManager::UpdateDatabaseIfNeeded()
     }
 
     return true;
+}
+
+void AccountManager::SaveProfile(GameClient* pClient)
+{
+    if (!m_pSQLManager->DoesTableExist("players", true))
+    {
+        return;
+    }
+
+    if (!pClient)
+    {
+        return;
+    }
+
+    uint32_t invMemSize = pClient->GetInventory().GetEstimatedMem();
+    uint8_t* pInvData = (uint8_t*)::malloc(invMemSize);
+
+    int offset = 0;
+    pClient->GetInventory().Serialize(pInvData, offset, true);
+
+    std::vector<char> escapedBuffer(invMemSize * 2 + 1);
+    unsigned long escapedLen = mysql_real_escape_string(
+        m_pSQLManager->GetConnection(),
+        escapedBuffer.data(),
+        reinterpret_cast<const char*>(pInvData),
+        invMemSize
+    );
+
+    std::string query = "UPDATE players SET "
+        "Inventory='" + std::string(escapedBuffer.data(), escapedLen) + "',"
+        "LogonName='" + m_pSQLManager->EscapeString(pClient->GetName()) + "'";
+
+    if (m_pSQLManager->Query(query, true))
+    {
+        ::printf("Saved data for %s\n", pClient->GetName().c_str());
+    }
 }

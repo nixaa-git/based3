@@ -1,6 +1,8 @@
 #include "MiscUtils.h"
 #include <cassert>
 #include <climits>
+#include <fstream>
+#include <algorithm>
 
 void MemorySerializeString( std::string &num, uint8_t *pMem, int &offsetInOut, bool bWriteToMem)
 {
@@ -265,47 +267,75 @@ std::string GetFileExtension(std::string fileName)
 	return fileName.substr(index+1, fileName.length());
 }
 
-uint8 * LoadFileIntoMemoryBasic(std::string fileName, unsigned int *length, bool bUseSavePath, bool bAddBasePath)
+uint8_t* LoadFileIntoMemoryBasic(const std::string& fileName, unsigned int* length, bool bUseSavePath, bool bAddBasePath)
 {
-	*length = 0;
-
-	if (bAddBasePath)
+    std::ifstream f(fileName, std::ios::binary);
+    if (!f) 
 	{
-		if (bUseSavePath)
-		{
-			//fileName = GetSavePath() + fileName;
-		} else
-		{
-			//fileName = GetBaseAppPath() + fileName;
-		}
-	}
-	
-	FILE *fp = fopen(fileName.c_str(), "rb");
-	if (!fp)
+		std::cerr << "Failed to open file: " << fileName << "\n";
+        return nullptr;
+    }
+
+    f.seekg(0, std::ios::end);
+    std::streampos size = f.tellg();
+    if (size == -1) 
 	{
-		//file not found	
-		return NULL;
-	}
+        std::cerr << "tellg() failed!\n";
+        return nullptr;
+    }
 
-	fseek(fp, 0, SEEK_END);
-	*length = ftell(fp);
-	fseek(fp, 0, SEEK_SET);
+    f.seekg(0, std::ios::beg);
 
-	uint8 *pData = new uint8[(*length) +1];
-	
-	if (!pData)
+    unsigned int fileSize = static_cast<unsigned int>(size);
+    uint8_t* data = (uint8_t*)std::malloc(fileSize);
+
+    if (!data) 
 	{
-		fclose(fp);
-		*length = UINT_MAX; //signal a mem error
-		return NULL;
-	}
-	pData[*length] = 0; 
-	fread(pData, *length, 1, fp);
-	fclose(fp);
+        std::cerr << "malloc failed!\n";
+        return nullptr;
+    }
 
-	//we add an extra null at the end to be nice, when loading text files this can be useful
+    f.read((char*)data, fileSize);
+    if (!f) 
+	{
+        std::cerr << "Failed to read full file.\n";
+        std::free(data);
+        return nullptr;
+    }
 
-	return pData;
+    *length = fileSize;
+    return data;
+}
+
+bool SaveFileFromMemoryBasic(std::string fileName, uint8 *pData, unsigned int length, bool bUseSavePath, bool bAddBasePath)
+{
+	std::ofstream f(fileName, std::ios::binary);
+
+	f.write((char*)pData, length);
+
+	return true;
+}
+
+int RandomRange(int min, int max)
+{
+    if (min == max)
+        return min;
+
+    return std::rand() % (max - min) + min;
+}
+
+std::string ToUppercase(const std::string& input)
+{
+    std::string result = input;
+    std::transform(result.begin(), result.end(), result.begin(), ::toupper);
+    return result;
+}
+
+std::string ToLowercase(const std::string& input)
+{
+    std::string result = input;
+    std::transform(result.begin(), result.end(), result.begin(), ::tolower);
+    return result;
 }
 
 uint32 HashString(const char *str, int32 len)

@@ -1,4 +1,5 @@
 #include "WorldTileMap.h"
+#include "../Manager/ItemDB.h"
 
 /*
 WorldTileMap::WorldTileMap(CL_Vec2i size)
@@ -6,19 +7,19 @@ WorldTileMap::WorldTileMap(CL_Vec2i size)
     // load data from map file if exist etc ?
 }*/
 
-void WorldTileMap::Serialize(uint8_t* pData, int& offset, bool bWriteToMem)
+void WorldTileMap::Serialize(uint8_t* pData, int& offset, bool bWriteToMem, bool bClientPacket)
 {
     MemorySerialize(m_size.x, pData, offset, bWriteToMem);
     MemorySerialize(m_size.y, pData, offset, bWriteToMem);
 
-    if (bWriteToMem)
+    if (!bClientPacket)
     {
-        m_tileCount = m_tiles.size();
+        MemorySerialize(m_mainDoorPos.x, pData, offset, bWriteToMem);
+        MemorySerialize(m_mainDoorPos.y, pData, offset, bWriteToMem);
     }
-    
-    MemorySerialize(m_tileCount, pData, offset, bWriteToMem);
 
-    //offset += 5;
+    uint32_t tileCount = m_tiles.size();
+    MemorySerialize(tileCount, pData, offset, bWriteToMem);
 
     if (bWriteToMem)
     {
@@ -30,7 +31,7 @@ void WorldTileMap::Serialize(uint8_t* pData, int& offset, bool bWriteToMem)
     else 
     {
         m_tiles.reserve(m_size.x * m_size.y);
-        for (int i = 0; i < m_tileCount; i++)
+        for (int i = 0; i < tileCount; i++)
         {
             Tile tile{};
             tile.m_index = i;
@@ -39,37 +40,81 @@ void WorldTileMap::Serialize(uint8_t* pData, int& offset, bool bWriteToMem)
         }
     }
 
-    //offset += 12;
+    ::printf("%d tiles in vec\n", m_tiles.size());
 }
 
-uint32_t WorldTileMap::GetEstimatedMem()
+uint32_t WorldTileMap::GetEstimatedMem(bool bClientPacket)
 {
     uint32_t res = 0;
+    res += sizeof(CL_Vec2i);
+    res += sizeof(uint32_t);
+
+    if (bClientPacket)
+    {
+        res += sizeof(CL_Vec2i); // main door server side info
+    }
+
     for (auto& tile : m_tiles)
     {
-        res += tile.GetEstimatedMem();
+        res += tile.GetEstimatedMem(bClientPacket);
     }
 
     return res;
 }
 
-void WorldTileMap::Generate()
+Tile* WorldTileMap::GetTileAtPos(int x, int y)
 {
-    m_tiles.reserve(m_size.x * m_size.y);
-    for (int i = 0; i < (m_size.x * m_size.y); i++)
-    {
-        Tile tile;
-        tile.m_fg = 2;
-        tile.m_index = i;
-        m_tiles.push_back(tile);
-    }
+    if (x < 0 || y < 0 || x >= m_size.x || y >= m_size.y)
+        return nullptr;
 
-    /*
-    for (int xx = 0; xx < m_size.x; xx++)
+    return &m_tiles[y * m_size.x + x];
+}
+
+void WorldTileMap::FillRect(CL_Vec2i topLeft, CL_Vec2i bottomRight, short fg, short bg, short flags)
+{
+    for (int y = topLeft.y; y <= bottomRight.y; y++)
     {
-        for (int yy = 0; yy < m_size.y; yy++)
+        for (int x = topLeft.x; x <= bottomRight.x; x++)
         {
-            //int index = 
+            if (x < 0 || x >= m_size.x || y < 0 || y >= m_size.y)
+            {
+                continue;
+            }
+
+            int index = y * m_size.x + x;
+            if (index < 0 || index >= static_cast<int>(m_tiles.size()))
+            {
+                continue;
+            }
+
+            m_tiles[index].m_fg = fg;
+            m_tiles[index].m_bg = bg;
+            m_tiles[index].m_flags = flags;
         }
-    }*/
+    }
+}
+
+void WorldTileMap::FillRectRandom(const CL_Vec2i& topLeft, const CL_Vec2i& bottomRight, int amount, short fg, short bg)
+{
+    if (amount <= 0)
+        return;
+
+    for (int i = 0; i < amount; i++)
+    {
+        int x = RandomRange(topLeft.x, bottomRight.x);
+        int y = RandomRange(topLeft.y, bottomRight.y);
+
+        if (x < 0 || x >= m_size.x || y < 0 || y >= m_size.y)
+            continue;
+
+        int index = y * m_size.x + x;
+        if (index < 0 || index >= static_cast<int>(m_tiles.size()))
+            continue;
+
+        if (fg != -1)
+            m_tiles[index].m_fg = fg;
+
+        if (bg != -1)
+            m_tiles[index].m_bg = bg;
+    }
 }
