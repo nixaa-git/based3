@@ -7,6 +7,7 @@ void CoreApp::Init()
     // todo.
     m_pENetServer = new ENetServer();
     m_pEventManager = new EventManager();
+    m_pCommandHandler = new CommandHandler();
     m_pItemInfoManager = new ItemInfoManager();
     m_pWorldManager = new WorldManager();
     m_pAccountManager = new AccountManager();
@@ -64,6 +65,7 @@ void CoreApp::Main()
     m_pAccountManager->Init();
     m_pWorldDBManager->Init(); 
     m_pEventManager->Init();
+    m_pCommandHandler->Init();
     this->InitItemData();
 
 
@@ -106,6 +108,11 @@ ENetServer* CoreApp::GetENetServer()
 EventManager* CoreApp::GetEventManager()
 {
     return m_pEventManager;
+}
+
+CommandHandler* CoreApp::GetCommandHandler()
+{
+    return m_pCommandHandler;
 }
 
 MySQLManager* CoreApp::GetSQLManager()

@@ -74,12 +74,12 @@ namespace event
         ctx.m_pClient->SendGlobalFunctionCall(spawnvar, -1, -1);
 
         VariantList clothingvar{};
-        spawnvar.Get(0).Set("OnSetClothing");
-        spawnvar.Get(1).Set(CL_Vec3f(0.f, 0.f, 0.f));
-        spawnvar.Get(2).Set(CL_Vec3f(0.f, 0.f, 0.f));
-        spawnvar.Get(3).Set(CL_Vec3f(1674.f, 0.f, 0.f));
-        spawnvar.Get(4).Set((int)ctx.m_pClient->GetSkinColour());
-        spawnvar.Get(5).Set(CL_Vec3f(0.f, 0.f, 0.f));
+        clothingvar.Get(0).Set("OnSetClothing");
+        clothingvar.Get(1).Set(CL_Vec3f(0.f, 0.f, 0.f));
+        clothingvar.Get(2).Set(CL_Vec3f(0.f, 0.f, 0.f));
+        clothingvar.Get(3).Set(CL_Vec3f(1674.f, 0.f, 0.f));
+        clothingvar.Get(4).Set((int)ctx.m_pClient->GetSkinColour());
+        clothingvar.Get(5).Set(CL_Vec3f(0.f, 0.f, 0.f));
         ctx.m_pClient->SendGlobalFunctionCall(clothingvar, -1, ctx.m_pClient->GetNetID());
 
         // add essential items

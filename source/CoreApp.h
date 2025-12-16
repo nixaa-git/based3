@@ -5,6 +5,7 @@
 #include "Events/EventManager.h"
 #include "Manager/ItemInfoManager.h"
 #include "Manager/WorldManager.h"
+#include "Commands/CommandHandler.h"
 #include "SQL/MySQLManager.h"
 #include "SQL/AccountManager.h"
 #include "SQL/WorldDBManager.h"
@@ -30,6 +31,7 @@ public:
     WorldDBManager* GetWorldDBManager();
     WorldManager* GetWorldManager();
     EventManager* GetEventManager();
+    CommandHandler* GetCommandHandler();
     ItemInfoManager* GetItemInfoManager();
     uint8_t* GetItemInfoBuffer();
     uint32_t GetItemInfoBufferSize();
@@ -41,6 +43,7 @@ private:
     AccountManager* m_pAccountManager = NULL;
     WorldDBManager* m_pWorldDBManager = NULL;
     EventManager* m_pEventManager = NULL;
+    CommandHandler* m_pCommandHandler = NULL;
     ItemInfoManager* m_pItemInfoManager = NULL;
     WorldManager* m_pWorldManager = NULL;
     uint8_t* m_pItemInfoBuffer = NULL;

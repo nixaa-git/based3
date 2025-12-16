@@ -2336,6 +2336,19 @@ ItemInfo* ItemInfoManager::GetItemByIDSafe(int itemID)
 	return &m_itemInfo[itemID];
 }
 
+ItemInfo* ItemInfoManager::GetItemByNameSafe(const std::string& name)
+{
+	for (auto& item : m_itemInfo)
+	{
+		if (ToLowercase(item.m_name) == ToLowercase(name))
+		{
+			return &item;
+		}
+	}
+
+	return nullptr;
+}
+
 bool ItemInfoManager::LoadFromMem(uint8* pBuffer, bool bUseClientData)
 {
 	uint32 itemCount = 0;

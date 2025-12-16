@@ -38,6 +38,8 @@ file(GLOB src
     source/Events/GenericText/*.cpp
     source/Events/GameMessage/*.cpp
     source/Events/GamePacket/*.cpp
+    source/Commands/*.cpp
+    source/Commands/Func/*.cpp
 )
 
 include_directories(

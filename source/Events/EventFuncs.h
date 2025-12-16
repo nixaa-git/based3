@@ -10,6 +10,7 @@ namespace event
     void requestedName(EVENT_HANDLER_ARGS);
     void refresh_item_data(EVENT_HANDLER_ARGS);
     void enter_game(EVENT_HANDLER_ARGS);
+    void input(EVENT_HANDLER_ARGS);
     
     /****Game Message****/
     void join_request(EVENT_HANDLER_ARGS);
@@ -17,4 +18,5 @@ namespace event
     
     /****Game Update****/
     void gp_state(EVENT_HANDLER_ARGS);
+    void gp_tilechangerequest(EVENT_HANDLER_ARGS);
 }

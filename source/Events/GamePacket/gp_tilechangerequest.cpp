@@ -3,7 +3,7 @@
 
 namespace event
 {
-    void gp_state(EVENT_HANDLER_ARGS)
+    void gp_tilechangerequest(EVENT_HANDLER_ARGS)
     {
         if (!ctx.m_pClient)
         {
@@ -12,7 +12,7 @@ namespace event
 
         if (ctx.m_pClient->GetAuthStatus() != eClientAuthStatus::AUTHENTICATED)
         {
-            ::printf("This guy is sending state packet whilst being unauthenticated?! Cheater!\n");
+            ::printf("This guy is sending tile change req packet whilst being unauthenticated?! Cheater!\n");
             return;
         }
 
@@ -22,19 +22,14 @@ namespace event
             return;
         }
 
-        pkt->netID = ctx.m_pClient->GetNetID();
-        CL_Vec2f pos = {pkt->posX, pkt->posY};
-
-        //std::printf("%s (NetID: %d) moved to %f, %f\n", ctx.m_pClient->GetName().c_str(), pkt->netID, pos.x, pos.y);
-
         World* pWorld = ctx.m_pClient->GetCurrentWorld();
         if (!pWorld)
         {
             return;
         }
 
-        pWorld->Broadcast([&](GameClient* pClient) {
-            pClient->SendPacketRaw(4, pkt, sizeof(GameUpdatePacket), NULL);
-        });
+        CL_Vec2i posPlace = {pkt->posX, pkt->posY};
+
+        
     }
 }

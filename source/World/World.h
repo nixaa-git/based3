@@ -40,6 +40,19 @@ public:
     uint32_t GetWeatherID() { return m_weather; }
     void SetWeatherID(uint32_t weatherID) { m_weather = weatherID; }
 
+    // broadcast func
+    template <typename Func>
+    void Broadcast(Func&& func)
+    {
+        for (auto& netObj : m_netObjManager.GetObjects())
+        {
+            if (netObj.second)
+            {
+                func(netObj.second);
+            }
+        }
+    }
+
 private:
     uint16_t m_version = 15;
     uint32_t m_flags = 0;

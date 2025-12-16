@@ -401,6 +401,7 @@ public:
 	uint8_t* SaveToMem(int & offset, uint16_t version, bool bUseClientData);
 
 	ItemInfo* GetItemByIDSafe(int itemID);
+	ItemInfo* GetItemByNameSafe(const std::string& name);
 	bool LoadFromMem(uint8_t* pBuffer, bool bUseClientData);
 
 public:
